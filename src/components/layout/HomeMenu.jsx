@@ -28,7 +28,7 @@ const HomeMenu = () => {
     useEffect(() => {
         getPizzas()
         .then((snapshot) => {
-            setBestSeller(snapshot)
+            setBestSeller(snapshot.slice(0, 3))
         })
     }, []);
     return (
@@ -39,7 +39,7 @@ const HomeMenu = () => {
                     mainHeader={'Our Best Sellers'}
                 />
             </div>
-            <div className="grid sm:grid-cols-3 gap-4">
+            <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-4">
                 {
                     bestSeller.length > 0 &&
                     bestSeller.map((item) => {
