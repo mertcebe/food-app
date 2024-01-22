@@ -5,7 +5,8 @@ import MenuItem from '../menu/MenuItem';
 import data from '../../data/data.json';
 
 const getPizzas = async (num) => {
-    const url = `https://pizza-and-desserts.p.rapidapi.com/pizzas`;
+    let url = `https://pizza-and-desserts.p.rapidapi.com/pizzas`;
+
     const options = {
         method: 'GET',
         headers: {
@@ -17,6 +18,9 @@ const getPizzas = async (num) => {
     try {
         // const response = await fetch(url, options);
         // const result = await response.text();
+        if (typeof num === 'number') {
+            return data[num - 1];
+        }
         return data;
     } catch (error) {
         console.error(error);
@@ -27,9 +31,9 @@ const HomeMenu = () => {
     let [bestSeller, setBestSeller] = useState([]);
     useEffect(() => {
         getPizzas()
-        .then((snapshot) => {
-            setBestSeller(snapshot.slice(0, 3))
-        })
+            .then((snapshot) => {
+                setBestSeller(snapshot.slice(0, 3))
+            })
     }, []);
     return (
         <>
