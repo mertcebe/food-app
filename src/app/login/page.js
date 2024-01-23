@@ -1,24 +1,29 @@
 "use client";
 import { auth } from "@/firebase/firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword } from "firebase/auth";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { useAuthorized } from "@/auth/authFunctions";
 import { useRouter } from "next/navigation";
+import { useAuthorized } from "@/auth/authFunctions";
+import { setDataToFirebase } from "@/firebase/firebaseActions";
 
 export default function LoginPage() {
     let [email, setEmail] = useState('');
     let [password, setPassword] = useState('');
     let [loading, setLoading] = useState(false);
-    let [activeUser, setActiveUser] = useState(false);
+    let [activeUser, setActiveUser] = useState(true);
     const router = useRouter();
     useEffect(() => {
-        useAuthorized().then((result) => {
-            setActiveUser(result);
-            if (result) {
+        useAuthorized().then((snapshot) => {
+            console.log(snapshot)
+            if (snapshot) {
+                setActiveUser(true);
                 router.push('/');
             }
-        });
+            else {
+                setActiveUser(false);
+            }
+        })
     }, []);
     const handleLogin = (e) => {
         e.preventDefault();
@@ -27,7 +32,7 @@ export default function LoginPage() {
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredentials) => {
                     setLoading(false);
-                    console.log(userCredentials.user);
+                    router.push('/');
                 })
         }
         else if (!email) {
@@ -40,7 +45,7 @@ export default function LoginPage() {
     return (
         <>
             {
-                activeUser &&
+                !activeUser &&
                 <section className="text-center my-12">
                     <h1 className="font-semibold text-primary text-3xl mt-8 mb-4">Login</h1>
                     <form className="block max-w-xs mx-auto" onSubmit={handleLogin}>

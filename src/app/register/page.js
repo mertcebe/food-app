@@ -1,6 +1,6 @@
 "use client";
 import { auth } from "@/firebase/firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -14,14 +14,22 @@ export default function RegisterPage() {
         if (email && password) {
             setCreateUserLoading(true);
             createUserWithEmailAndPassword(auth, email, password)
-                .then(() => {
+                .then((userCredentials) => {
+                    const userInfo = {
+                        displayName: userCredentials.user.displayName,
+                        email: userCredentials.user.email,
+                        uid: userCredentials.user.uid,
+                        photoURL: userCredentials.user.photoURL,
+                        phoneNumber: userCredentials.user.phoneNumber
+                    }
+                    setDataToFirebase('users', userCredentials.user.uid, userInfo);
                     setCreateUserLoading(false);
                 })
         }
-        else if(!email){
+        else if (!email) {
             document.getElementById('registerEmail').focus();
         }
-        else if(!password){
+        else if (!password) {
             document.getElementById('registerPassword').focus();
         }
     }
@@ -47,6 +55,10 @@ export default function RegisterPage() {
                         <Link className="underline" href={'/login'}>Login here &raquo;</Link>
                     </div>
                 </form>
+
+                <button onClick={() => {
+                    signOut(auth);
+                }}>sign out</button>
             </section>
         </>
     );
