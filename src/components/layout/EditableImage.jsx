@@ -1,24 +1,13 @@
+import { ImageApload } from "@/files/ImageApload";
 import Image from "next/image";
 
 export default function EditableImage({ link, setLink }) {
-
+    console.log(link)
     async function handleFileChange(e) {
         const files = e.target.files;
         if (files?.length === 1) {
-            const data = new FormData;
-            data.set('file', files[0]);
-
-            // const uploadPromise = fetch('/api/upload', {
-            //     method: 'POST',
-            //     body: data,
-            // }).then(response => {
-            //     if (response.ok) {
-            //         return response.json().then(link => {
-            //             setLink(link);
-            //         })
-            //     }
-            //     throw new Error('Something went wrong');
-            // });
+            const src = URL.createObjectURL(files[0]);
+            setLink({src, file: files[0]});
         }
     }
 
