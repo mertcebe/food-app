@@ -1,7 +1,9 @@
 'use client';
 import UserTabs from "@/components/layout/UserTabs";
 import { useProfile } from "@/components/useProfile";
-// import DeleteButton from "@/components/DeleteButton";
+import { database } from "@/firebase/firebaseConfig";
+import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, setDoc, updateDoc } from "firebase/firestore";
+import DeleteButton from "@/components/DeleteButton";
 import { useEffect, useState } from "react";
 
 export default function CategoriesPage() {
@@ -14,49 +16,42 @@ export default function CategoriesPage() {
         fetchCategories();
     }, []);
 
-    function fetchCategories() {
-        fetch('/api/categories').then(res => {
-            res.json().then(categories => {
-                setCategories(categories);
-            });
-        });
+    const fetchCategories = () => {
+        getDocs(query(collection(database, `categories`), orderBy('name', 'desc')))
+            .then((snapshot) => {
+                let list = [];
+                snapshot.forEach((category) => {
+                    list.push({
+                        _id: category.id,
+                        ...category.data()
+                    });
+                })
+                setCategories(list);
+            })
     }
 
-    async function handleCategorySubmit(ev) {
-        ev.preventDefault();
-        const creationPromise = new Promise(async (resolve, reject) => {
-            const data = { name: categoryName };
-            if (editedCategory) {
-                data._id = editedCategory._id;
-            }
-            const response = await fetch('/api/categories', {
-                method: editedCategory ? 'PUT' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+    async function handleCategorySubmit(e) {
+        e.preventDefault();
+        if (!editedCategory) {
+            await addDoc(collection(database, `categories`), {
+                name: categoryName
             });
-            setCategoryName('');
-            fetchCategories();
-            setEditedCategory(null);
-            if (response.ok)
-                resolve();
-            else
-                reject();
-        });
+        }
+        else {
+            await updateDoc(doc(database, `categories/${editedCategory._id}`), {
+                name: categoryName
+            });
+        }
+        setCategoryName('');
+        fetchCategories();
+        setEditedCategory(null);
     }
 
     async function handleDeleteClick(_id) {
-        const promise = new Promise(async (resolve, reject) => {
-            const response = await fetch('/api/categories?_id=' + _id, {
-                method: 'DELETE',
-            });
-            if (response.ok) {
-                resolve();
-            } else {
-                reject();
-            }
-        });
-
-        fetchCategories();
+        deleteDoc(doc(database, `categories/${_id}`))
+            .then(() => {
+                fetchCategories();
+            })
     }
 
     if (profileLoading) {
@@ -117,9 +112,9 @@ export default function CategoriesPage() {
                             >
                                 Edit
                             </button>
-                            {/* <DeleteButton
+                            <DeleteButton
                                 label="Delete"
-                                onDelete={() => handleDeleteClick(c._id)} /> */}
+                                onDelete={() => handleDeleteClick(c._id)} />
                         </div>
                     </div>
                 ))}

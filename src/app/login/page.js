@@ -15,14 +15,9 @@ export default function LoginPage() {
     const router = useRouter();
     useEffect(() => {
         useAuthorized().then((snapshot) => {
-            console.log(snapshot)
-            if (snapshot) {
-                setActiveUser(true);
+            setActiveUser(snapshot);
+            if (snapshot)
                 router.push('/');
-            }
-            else {
-                setActiveUser(false);
-            }
         })
     }, []);
     const handleLogin = (e) => {
@@ -30,7 +25,7 @@ export default function LoginPage() {
         if (email && password) {
             setLoading(true);
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredentials) => {
+                .then(() => {
                     setLoading(false);
                     router.push('/');
                 })

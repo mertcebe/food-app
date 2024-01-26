@@ -23,7 +23,7 @@ export default function UserForm({ user, onSave }) {
         if (propName === 'city') setCity(value);
         if (propName === 'country') setCountry(value);
     }
-    console.log(user)
+
     return (
         <div className="md:flex gap-4">
             <div>

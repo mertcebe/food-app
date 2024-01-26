@@ -13,13 +13,8 @@ const Header = () => {
     const loc = usePathname();
     useEffect(() => {
         useAuthorized().then((snapshot) => {
-            setUser(auth.currentUser)
-            if (snapshot) {
-                setIsAuthorized(true);
-            }
-            else {
-                setIsAuthorized(false);
-            }
+            setUser(auth.currentUser);
+            setIsAuthorized(snapshot);
         })
     }, [loc]);
 
@@ -44,7 +39,7 @@ const Header = () => {
                         </nav>
                         :
                         <div className='flex gap-2 items-center'>
-                            <Link href={'/profile'} className='text-gray-500 font-semibold border-none px-4 py-2'>Hello, {user?.displayName?user?.displayName.split(' ')[0]:'User'}</Link>
+                            <Link href={'/profile'} className='text-gray-500 font-semibold border-none px-4 py-2'>Hello, {user?.displayName ? user?.displayName.split(' ')[0] : 'User'}</Link>
                             <button
                                 onClick={() => {
                                     signOut(auth);

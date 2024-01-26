@@ -3,28 +3,30 @@ import React, { useEffect, useState } from 'react'
 import SectionHeaders from './SectionHeaders';
 import MenuItem from '../menu/MenuItem';
 import data from '../../data/data.json';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { database } from '@/firebase/firebaseConfig';
 
 const getPizzas = async (num) => {
-    let url = `https://pizza-and-desserts.p.rapidapi.com/pizzas`;
-
-    const options = {
-        method: 'GET',
-        headers: {
-            'X-RapidAPI-Key': '588fcf9436mshc1af2c1f8b94917p192dfajsnefdeaaa65e3a',
-            'X-RapidAPI-Host': 'pizza-and-desserts.p.rapidapi.com'
+    return new Promise((resolve) => {
+        try {
+            getDocs(query(collection(database, `menu/categories/pizza`)))
+                .then((snapshot) => {
+                    const data = [];
+                    snapshot.forEach((i) => {
+                        data.push({
+                            id: i.id,
+                            ...i.data()
+                        });
+                    });
+                    if (typeof num === 'number') {
+                        resolve(data[num - 1]);
+                    }
+                    resolve(data);
+                })
+        } catch (error) {
+            console.error(error);
         }
-    };
-
-    try {
-        // const response = await fetch(url, options);
-        // const result = await response.text();
-        if (typeof num === 'number') {
-            return data[num - 1];
-        }
-        return data;
-    } catch (error) {
-        console.error(error);
-    }
+    })
 }
 
 const HomeMenu = () => {

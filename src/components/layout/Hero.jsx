@@ -29,7 +29,7 @@ const Hero = () => {
             </div>
 
             <div className="relative hidden md:block">
-                <Image src='/pizza.png' width={'400'} height={'300'} objectFit={'contain'} alt={'pizza'} />
+                <Image src='/pizza.png' width={'400'} height={'300'} alt={'pizza'} />
             </div>
         </section>
     )

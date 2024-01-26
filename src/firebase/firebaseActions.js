@@ -1,8 +1,8 @@
 import { doc, getDoc, setDoc } from "firebase/firestore"
 import { database } from "./firebaseConfig"
 
-export const setDataToFirebase = (path, title, data) => {
-    setDoc(doc(database, `${path}/${title}`), data);
+export const setDataToFirebase = (path, data) => {
+    setDoc(doc(database, `${path}`), data);
 }
 
 export const getUser = async (uid) => {

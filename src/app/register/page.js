@@ -1,14 +1,30 @@
 "use client";
+import { useAuthorized } from "@/auth/authFunctions";
+import { setDataToFirebase } from "@/firebase/firebaseActions";
 import { auth } from "@/firebase/firebaseConfig";
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function RegisterPage() {
     let [email, setEmail] = useState('');
     let [password, setPassword] = useState('');
     let [createUserLoading, setCreateUserLoading] = useState(false);
+    let [isAuthorized, setIsAuthorized] = useState(false);
+
+    const router = useRouter();
+
+    useEffect(() => {
+        useAuthorized()
+        .then((snapshot) => {
+            setIsAuthorized(snapshot);
+            if(snapshot)
+                router.push('/');
+        })
+    }, []);
+
     const handleRegister = (e) => {
         e.preventDefault();
         if (email && password) {
@@ -22,7 +38,7 @@ export default function RegisterPage() {
                         photoURL: userCredentials.user.photoURL,
                         phoneNumber: userCredentials.user.phoneNumber
                     }
-                    setDataToFirebase('users', userCredentials.user.uid, userInfo);
+                    setDataToFirebase(`users/${userCredentials.user.uid}`, userInfo);
                     setCreateUserLoading(false);
                 })
         }
@@ -32,6 +48,12 @@ export default function RegisterPage() {
         else if (!password) {
             document.getElementById('registerPassword').focus();
         }
+    }
+
+    if(isAuthorized){
+        return (
+            <></>
+        )
     }
     return (
         <>

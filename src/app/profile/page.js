@@ -5,10 +5,11 @@ import { useAuthorized } from "@/auth/authFunctions";
 import { useRouter } from "next/navigation";
 import UserForm from "@/components/layout/UserForm";
 import UserTabs from "@/components/layout/UserTabs";
-import { doc, setDoc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, doc, setDoc, updateDoc } from "firebase/firestore";
 import { updateProfile } from "firebase/auth";
 import { getUser } from "@/firebase/firebaseActions";
 import Loading from "@/components/icons/Loading";
+import data from '../../data/data.json';
 
 const ProfilePage = async () => {
     let [user, setUser] = useState();
@@ -49,7 +50,13 @@ const ProfilePage = async () => {
         )
     }
     return (
-        <section className="mt-5">
+        <section className="mt-8">
+            {/* <button onClick={() => {
+                data.map((pizza) => {addDoc(collection(database, `categories/mWTthKNhsL3NVvYNQezh/menu`), {...pizza})
+                })
+            }}>
+                set pizzas
+            </button> */}
             <UserTabs isAdmin={true} />
             <div className="max-w-2xl mx-auto mt-5">
                 <UserForm user={user} onSave={onSave} />
