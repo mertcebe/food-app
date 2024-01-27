@@ -15,6 +15,7 @@ export const getDatas = async (type) => {
                 snapshot.forEach((item) => {
                     list.push({
                         _id: item.id,
+                        category: type,
                         ...item.data()
                     });
                 })
