@@ -1,5 +1,6 @@
 "use client";
 import { useAuthorized } from '@/auth/authFunctions';
+import { getUser } from '@/firebase/firebaseActions';
 import { auth } from '@/firebase/firebaseConfig';
 import { signOut } from 'firebase/auth';
 import Link from 'next/link'
@@ -13,8 +14,13 @@ const Header = () => {
     const loc = usePathname();
     useEffect(() => {
         useAuthorized().then((snapshot) => {
-            setUser(auth.currentUser);
-            setIsAuthorized(snapshot);
+            if (snapshot === true) {
+                getUser(auth.currentUser.uid)
+                    .then((userInfo) => {
+                        setUser(userInfo);
+                        setIsAuthorized(snapshot);
+                    })
+            }
         })
     }, [loc]);
 
@@ -44,6 +50,7 @@ const Header = () => {
                                 onClick={() => {
                                     signOut(auth);
                                     setIsAuthorized(false);
+                                    router.push('/login');
                                 }}
                                 style={{ width: "140px" }}
                                 className='bg-primary text-white px-6 py-2 rounded-full'>

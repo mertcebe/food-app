@@ -40,6 +40,7 @@ export default function RegisterPage() {
                     }
                     setDataToFirebase(`users/${userCredentials.user.uid}`, userInfo);
                     setCreateUserLoading(false);
+                    router.push('/login');
                 })
         }
         else if (!email) {
@@ -77,10 +78,6 @@ export default function RegisterPage() {
                         <Link className="underline" href={'/login'}>Login here &raquo;</Link>
                     </div>
                 </form>
-
-                <button onClick={() => {
-                    signOut(auth);
-                }}>sign out</button>
             </section>
         </>
     );

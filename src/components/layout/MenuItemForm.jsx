@@ -13,9 +13,9 @@ export default function MenuItemForm({ onSubmit, menuItem }) {
     const [category, setCategory] = useState(menuItem?.category || '');
     const [categories, setCategories] = useState([]);
     const [extraIngredientPrices, setExtraIngredientPrices] = useState(menuItem?.extraIngredientPrices || []);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        console.log(menuItem)
         fetchCategories();
     }, []);
 
@@ -35,17 +35,18 @@ export default function MenuItemForm({ onSubmit, menuItem }) {
 
     return (
         <form
-            onSubmit={ev =>
+            onSubmit={ev => {
+                setLoading(true);
                 onSubmit(ev, {
-                    image, name, description, basePrice, sizes, extraIngredientPrices, category,
-                })
-            }
+                    img: image, name, description, price: basePrice, sizes, extraIngredientPrices, category,
+                });
+            }}
             className="mt-8 max-w-2xl mx-auto">
             <div
                 className="md:grid items-start gap-4"
                 style={{ gridTemplateColumns: '.3fr .7fr' }}>
                 <div>
-                    <EditableImage link={image} setLink={setImage} />
+                    <EditableImage link={image.src ? image.src : image} setLink={setImage} />
                 </div>
                 <div className="grow">
                     <label>Item name</label>
@@ -80,7 +81,7 @@ export default function MenuItemForm({ onSubmit, menuItem }) {
                         addLabel={'Add ingredients prices'}
                         props={extraIngredientPrices}
                         setProps={setExtraIngredientPrices} />
-                    <button type="submit">Save</button>
+                    <button type="submit" disabled={loading}>Save</button>
                 </div>
             </div>
         </form>

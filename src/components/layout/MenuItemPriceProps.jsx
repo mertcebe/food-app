@@ -8,9 +8,7 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps }) 
     const [isOpen, setIsOpen] = useState(false);
 
     function addProp() {
-        setProps(oldProps => {
-            return [...oldProps, { name: '', price: 0 }];
-        });
+        setProps([...props, { name: '', price: 0 }]);
     }
 
     function editProp(ev, index, prop) {
@@ -29,7 +27,7 @@ export default function MenuItemPriceProps({ name, addLabel, props, setProps }) 
     return (
         <div className="bg-gray-200 p-2 rounded-md mb-2">
             <button
-                onClick={() => setIsOpen(prev => !prev)}
+                onClick={() => setIsOpen(prevState => !prevState)}
                 className="inline-flex p-1 border-0 justify-start"
                 type="button">
                 {isOpen && (

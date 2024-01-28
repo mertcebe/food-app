@@ -2,20 +2,25 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/
 
 export const ImageApload = async (file) => {
     return new Promise(async (resolve) => {
-        const storage = getStorage();
+        if (typeof file !== 'undefined') {
+            const storage = getStorage();
 
-        const metadata = {
-            contentType: `${file.type}`
-        };
+            const metadata = {
+                contentType: `${file.type}`
+            };
 
-        const storageRef = ref(storage, 'images/' + file.name);
-        const uploadTask = await uploadBytesResumable(storageRef, file, metadata);
-        getDownloadURL(uploadTask.ref).then((downloadURL) => {
-            resolve({
-                name: file.name,
-                type: file.type,
-                src: downloadURL
-            })
-        });
+            const storageRef = ref(storage, 'images/' + file.name);
+            const uploadTask = await uploadBytesResumable(storageRef, file, metadata);
+            getDownloadURL(uploadTask.ref).then((downloadURL) => {
+                resolve({
+                    name: file.name,
+                    type: file.type,
+                    src: downloadURL
+                })
+            });
+        }
+        else {
+            resolve('');
+        }
     })
 }

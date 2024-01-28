@@ -1,7 +1,9 @@
 "use client";
 import DeleteButton from '@/components/DeleteButton'
+import Left from '@/components/icons/Left';
 import MenuItemForm from '@/components/layout/MenuItemForm';
 import UserTabs from '@/components/layout/UserTabs'
+import { deleteMenuItem, updateMenuItem } from '@/firebase/firebaseActions';
 import { database } from '@/firebase/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 import Link from 'next/link'
@@ -24,10 +26,22 @@ const EditDetailsPage = ({ params, searchParams }) => {
     }, []);
     const handleFormSubmit = async (e, data) => {
         e.preventDefault();
+        updateMenuItem(menuItem.category, menuItem._id, data)
+        .then(() => {
+            router.push('/menu-items');
+        })
     }
 
     const handleDeleteClick = () => {
-
+        deleteMenuItem(menuItem.category, menuItem._id)
+        .then((snapshot) => {
+            if(snapshot === true){
+                router.push('/menu-items');
+            }
+            else{
+                alert(snapshot.message);
+            }
+        })
     }
 
     if(!menuItem){
@@ -40,7 +54,7 @@ const EditDetailsPage = ({ params, searchParams }) => {
             <UserTabs isAdmin={true} />
             <div className="max-w-2xl mx-auto mt-8">
                 <Link href={'/menu-items'} className="button">
-                    {/* <Left /> */}
+                    <Left />
                     <span>Show all menu items</span>
                 </Link>
             </div>

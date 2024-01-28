@@ -57,7 +57,7 @@ const ProfilePage = async () => {
             }}>
                 set pizzas
             </button> */}
-            <UserTabs isAdmin={true} />
+            <UserTabs isAdmin={user.admin} />
             <div className="max-w-2xl mx-auto mt-5">
                 <UserForm user={user} onSave={onSave} />
             </div>

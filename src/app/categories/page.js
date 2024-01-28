@@ -1,19 +1,39 @@
 'use client';
 import UserTabs from "@/components/layout/UserTabs";
 import { useProfile } from "@/components/useProfile";
-import { database } from "@/firebase/firebaseConfig";
+import { auth, database } from "@/firebase/firebaseConfig";
 import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, setDoc, updateDoc } from "firebase/firestore";
 import DeleteButton from "@/components/DeleteButton";
 import { useEffect, useState } from "react";
+import { useAuthorized } from "@/auth/authFunctions";
+import { useRouter } from "next/navigation";
+import { getUser } from "@/firebase/firebaseActions";
 
 export default function CategoriesPage() {
     const [categoryName, setCategoryName] = useState('');
     const [categories, setCategories] = useState([]);
     const { loading: profileLoading, data: profileData } = useProfile();
     const [editedCategory, setEditedCategory] = useState(null);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    const router = useRouter();
 
     useEffect(() => {
-        fetchCategories();
+        useAuthorized()
+            .then((snapshot) => {
+                if (snapshot !== true) {
+                    router.push('/');
+                }
+                else {
+                    getUser(auth.currentUser.uid)
+                        .then((userData) => {
+                            setIsAdmin(userData.admin);
+                            if(userData.admin){
+                                fetchCategories();
+                            }
+                        })
+                }
+            })
     }, []);
 
     const fetchCategories = () => {
@@ -58,9 +78,9 @@ export default function CategoriesPage() {
         return 'Loading user info...';
     }
 
-    // if (!profileData.admin) {
-    //     return 'Not an admin';
-    // }
+    if (!profileData?.admin) {
+        return 'Not an admin';
+    }
 
     return (
         <section className="mt-8 max-w-2xl mx-auto">
