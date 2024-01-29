@@ -35,16 +35,6 @@ export default function UserForm({ user, onSave }) {
                 className="grow"
                 onSubmit={e => {
                     e.preventDefault();
-                    // ImageApload(image.file)
-                    //     .then((snapshot) => {
-                    //         if(snapshot !== ''){
-
-                    //         }
-                    //         console.log({
-                    //             displayName: userName, image: typeof snapshot !== 'string' && snapshot, photoURL: typeof snapshot !== 'string' && snapshot.src, phoneNumber: phone, admin,
-                    //             streetAddress, city, country, postalCode,
-                    //         })
-                    //     })
                     ImageApload(image.file)
                         .then((snapshot) => {
                             if (snapshot !== '') {

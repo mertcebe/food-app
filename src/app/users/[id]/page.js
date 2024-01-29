@@ -20,30 +20,28 @@ export default function EditUserPage({ params }) {
         getUser(params.id)
             .then((snapshot) => {
                 setUser(snapshot);
+                console.log(snapshot);
             })
     }, []);
 
     async function handleSaveButtonClick(ev, data) {
         ev.preventDefault();
-
         updateDoc(doc(database, `users/${user.uid}`), {
             ...data
         })
-        router.push('/');
+        router.push('/users');
     }
 
     if (loading) {
         return 'Loading user profile...';
     }
-
-    //   if (!data?.admin) {
-    //     return 'Not an admin';
-    //   }
-
     if (!user) {
         return (
             <></>
         )
+    }
+    if (!data?.admin) {
+        return 'Not an admin';
     }
     return (
         <section className="mt-8 mx-auto max-w-2xl">

@@ -16,13 +16,21 @@ export const getUser = async (uid) => {
 }
 
 export const updateMenuItem = async (type, id, data) => {
-    await ImageApload(data.img.file)
-        .then((snapshot) => {
-            updateDoc(doc(database, `menu/categories/${type}/${id}`), {
-                ...data,
-                img: snapshot.src
+    if (data.img.file) {
+        await ImageApload(data.img.file)
+            .then((snapshot) => {
+                updateDoc(doc(database, `menu/categories/${type}/${id}`), {
+                    ...data,
+                    img: snapshot.src
+                })
             })
-        })
+    }
+    else {
+        await
+            updateDoc(doc(database, `menu/categories/${type}/${id}`), {
+                ...data
+            })
+    }
 }
 
 export const deleteMenuItem = (type, id) => {
