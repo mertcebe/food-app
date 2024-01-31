@@ -1,12 +1,11 @@
 "use client";
 
 import SectionHeaders from '@/components/layout/SectionHeaders';
+import CartProduct from '@/components/menu/CartProduct';
 import MenuItem from '@/components/menu/MenuItem';
 import { database } from '@/firebase/firebaseConfig';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
-
 
 export const getDatas = async (type) => {
     let list = [];
@@ -30,8 +29,6 @@ const MenuPage = () => {
     const [isOpen, setIsOpen] = useState(false);
     // details box
     const [boxData, setBoxData] = useState(null);
-    const [chooseSize, setChooseSize] = useState(null);
-    const [chooseExtras, setChooseExtras] = useState(null);
 
     useEffect(() => {
         fetchCategories()
@@ -60,7 +57,6 @@ const MenuPage = () => {
     }
 
     const setBoxControl = (opt, data) => {
-        setChooseSize(null);
         setBoxData(data);
         setIsOpen(opt);
     }
@@ -69,53 +65,7 @@ const MenuPage = () => {
         <div className='my-4'>
             {
                 isOpen &&
-                <div className='fixed w-full h-screen top-0 left-0 flex justify-center items-center backdrop-blur-none backdrop-brightness-75 z-20 overflow-auto'>
-                    <div className='relative bg-white p-3 rounded-md text-center w-96'>
-                        {/* details page of {boxData._id} */}
-                        <Image src={boxData.img} width={'320'} height={'320'} alt='itemImage' className='mx-auto max-h-60' />
-                        <div className='text-gray-700 font-bold text-lg'>{boxData.name}</div>
-                        <div className='text-gray-400 text-sm'>
-                            {boxData.description}
-                        </div>
-                        <div>
-                            <p className='p-0 m-0 font-semibold text-sm text-gray-600'>Pick your size</p>
-                            <form>
-                                {
-                                    boxData.sizes.map((size, index) => {
-                                        return (
-                                            <div className='flex items-center w-full px-1 text-left rounded-md border border-gray-200 mb-2'>
-                                                <input type="radio" name="size" id={`size${index}`} onChange={(e) => {
-                                                    setChooseSize(size);
-                                                }} />
-                                                <label htmlFor={`size${index}`} className='font-bold ml-2 py-2 uppercase text-gray-500 inline-block w-full cursor-pointer'>{size.name}<span className='ml-2 text-gray-700'>${size.price}</span></label>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </form>
-                        </div>
-                        <div>
-                            <p className='p-0 m-0 font-semibold text-sm text-gray-600'>Any extras?</p>
-                            <form>
-                                {
-                                    boxData.extraIngredientPrices.map((extra, index) => {
-                                        return (
-                                            <div className='flex items-center w-full px-1 text-left rounded-md border border-gray-200 mb-2'>
-                                                <input type="checkbox" name="extra" id={`extra${index}`} />
-                                                <label htmlFor={`extra${index}`} className='font-bold ml-2 py-2 uppercase text-gray-500 inline-block w-full cursor-pointer'>{extra.name}<span className='ml-2 text-gray-700'>${extra.price}</span></label>
-                                            </div>
-                                        )
-                                    })
-                                }
-                            </form>
-                        </div>
-                        <button onClick={() => {
-                            setIsOpen(false);
-                            setBoxData(null);
-                        }} className='absolute right-1 top-1 w-12 backdrop-blur-sm'>x</button>
-                        <button>Add to chart ${Number(boxData.price) + Number(chooseSize ? chooseSize.price : 0)}</button>
-                    </div>
-                </div>
+                <CartProduct initialBoxData={boxData} setIsOpen={setIsOpen} />
             }
             {
                 categories?.map((category) => {

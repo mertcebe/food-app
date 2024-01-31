@@ -16,7 +16,11 @@ const MenuItem = ({ setBoxControl, ...params }) => {
     }
 
     const addToChart = (data) => {
-        setDoc(doc(database, `users/${auth.currentUser.uid}/offers/${data._id}`), data);
+        addDoc(collection(database, `users/${auth.currentUser.uid}/offers`), {
+            orderDate: new Date().getTime(),
+            productInfo: data,
+            price: price
+        });
     }
 
     return (
