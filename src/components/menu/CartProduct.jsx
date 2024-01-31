@@ -1,6 +1,8 @@
+import { useAuthorized } from '@/auth/authFunctions';
 import { auth, database } from '@/firebase/firebaseConfig';
 import { addDoc, collection } from 'firebase/firestore';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 const CartProduct = ({ initialBoxData, setIsOpen }) => {
@@ -9,13 +11,14 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
     const [chooseExtras, setChooseExtras] = useState([]);
     const [totalExtrasPrice, setTotalExtrasPrice] = useState(0);
 
+    const router = useRouter();
+
     useEffect(() => {
         let allCost = 0;
         chooseExtras.forEach((item) => {
             allCost += Number(item.price);
         });
         setTotalExtrasPrice(allCost);
-        console.log(boxData)
     }, [chooseExtras.length]);
 
     const closeCartProduct = () => {
@@ -27,16 +30,26 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
     }
 
     const addToCart = () => {
-        addDoc(collection(database, `users/${auth.currentUser.uid}/offers`), {
-            price: (Number(boxData.price) + totalExtrasPrice + Number(chooseSize?chooseSize.price:0)),
-            sizes: chooseSize,
-            extras: chooseExtras,
-            orderDate: new Date().getTime(),
-            productInfo: boxData
-        })
-        .then(() => {
-            setIsOpen(false);
-        })
+        useAuthorized()
+            .then((snapshot) => {
+                if (snapshot) {
+                    addDoc(collection(database, `users/${auth.currentUser.uid}/offers`), {
+                        price: (Number(boxData.price) + totalExtrasPrice + Number(chooseSize ? chooseSize.price : 0)),
+                        sizes: chooseSize,
+                        extras: chooseExtras,
+                        orderDate: new Date().getTime(),
+                        productInfo: boxData
+                    })
+                        .then(() => {
+                            setIsOpen(false);
+                            //! buraya bak
+                            router.refresh();
+                        })
+                }
+                else{
+                    alert('Login if you want to order!');
+                }
+            })
     }
 
     return (

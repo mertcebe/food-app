@@ -1,10 +1,13 @@
 import { auth, database } from '@/firebase/firebaseConfig';
 import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 
 const MenuItem = ({ setBoxControl, ...params }) => {
     const { _id, name, veg, price, description, img, sizes, extraIngredientPrices } = params;
+
+    const router = useRouter();
 
     const controlFunc = () => {
         if ((sizes && extraIngredientPrices) && (sizes.length > 0 || extraIngredientPrices.length > 0)) {
@@ -21,6 +24,8 @@ const MenuItem = ({ setBoxControl, ...params }) => {
             productInfo: data,
             price: price
         });
+        //! buraya bak
+        router.refresh();
     }
 
     return (

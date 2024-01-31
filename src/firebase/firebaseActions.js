@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore"
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc } from "firebase/firestore"
 import { database } from "./firebaseConfig"
 import { ImageApload } from "@/files/ImageApload";
 
@@ -11,6 +11,15 @@ export const getUser = async (uid) => {
         getDoc(doc(database, `users/${uid}`))
             .then((snapshot) => {
                 resolve(snapshot.data());
+            })
+    })
+}
+
+export const getOffersLength = async (uid) => {
+    return new Promise((resolve) => {
+        getDocs(query(collection(database, `users/${uid}/offers`)))
+            .then((snapshot) => {
+                resolve(snapshot.size);
             })
     })
 }

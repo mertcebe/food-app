@@ -5,6 +5,7 @@ import CartProduct from '@/components/menu/CartProduct';
 import MenuItem from '@/components/menu/MenuItem';
 import { database } from '@/firebase/firebaseConfig';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 export const getDatas = async (type) => {
@@ -29,6 +30,7 @@ const MenuPage = () => {
     const [isOpen, setIsOpen] = useState(false);
     // details box
     const [boxData, setBoxData] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         fetchCategories()

@@ -1,6 +1,6 @@
 "use client";
 import { useAuthorized } from '@/auth/authFunctions';
-import { getUser } from '@/firebase/firebaseActions';
+import { getOffersLength, getUser } from '@/firebase/firebaseActions';
 import { auth } from '@/firebase/firebaseConfig';
 import { signOut } from 'firebase/auth';
 import Image from 'next/image';
@@ -9,18 +9,26 @@ import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 
 const Header = () => {
-    let [isAuthorized, setIsAuthorized] = useState(true);
+    let [isAuthorized, setIsAuthorized] = useState(false);
     let [user, setUser] = useState(auth.currentUser);
+    let [offersLength, setOffersLength] = useState(0);
     const router = useRouter();
     const loc = usePathname();
     useEffect(() => {
         useAuthorized().then((snapshot) => {
+            setIsAuthorized(snapshot);
             if (snapshot === true) {
                 getUser(auth.currentUser.uid)
                     .then((userInfo) => {
                         setUser(userInfo);
-                        setIsAuthorized(snapshot);
+                        getOffersLength(userInfo.uid)
+                        .then((offersLength) => {
+                            setOffersLength(offersLength);
+                        })
                     })
+            }
+            else{
+                setOffersLength(0)
             }
         })
     }, [loc]);
@@ -60,8 +68,14 @@ const Header = () => {
                                 </button>
                             </div>
                     }
-                    <Link href={'/cart'} className='rounded-full'>
+                    <Link href={'/cart'} className='rounded-full relative'>
                         <Image src={'/shoppingcart.png'} width={'24'} height={'24'} alt='shoppingcart' className='pointer-events-none' />
+                        {
+                            offersLength > 0 &&
+                            <div className='absolute -top-2 -right-3 bg-primary inline-block w-5 h-5 leading-5 text-center text-xs font-semibold text-white rounded-full'>
+                                {offersLength}
+                            </div>
+                        }
                     </Link>
                 </div>
             </header>

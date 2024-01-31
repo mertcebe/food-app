@@ -1,6 +1,6 @@
-// import { cartProductPrice } from "@/components/AppContext";
 import Image from "next/image";
 import Trash from "../icons/Trash";
+import Link from "next/link";
 
 export default function CartProduct({ product, onRemove, disabled }) {
     return (
