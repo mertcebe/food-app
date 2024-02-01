@@ -4,12 +4,16 @@ import { addDoc, collection } from 'firebase/firestore';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
 
 const CartProduct = ({ initialBoxData, setIsOpen }) => {
     const [boxData, setBoxData] = useState(initialBoxData);
     const [chooseSize, setChooseSize] = useState(null);
     const [chooseExtras, setChooseExtras] = useState([]);
     const [totalExtrasPrice, setTotalExtrasPrice] = useState(0);
+    const [offSetX, setOffSetX] = useState(null);
+    const [offSetY, setOffSetY] = useState(null);
 
     const router = useRouter();
 
@@ -29,6 +33,23 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
         setTotalExtrasPrice(0);
     }
 
+    const productBoxIsOpen = useSelector((state) => {
+        return state.menuItemReducers.productBoxIsOpen;
+    })
+    const actionIsVis = useSelector((state) => {
+        return state.menuItemReducers.actionIsVis;
+    })
+    const dispatch = useDispatch();
+
+    const addToCartAction = () => {
+        dispatch({
+            type: 'ACTION_TOGGLE',
+            payload: {
+                isVis: true
+            }
+        })
+    }
+
     const addToCart = () => {
         useAuthorized()
             .then((snapshot) => {
@@ -41,12 +62,18 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
                         productInfo: boxData
                     })
                         .then(() => {
+                            addToCartAction();
                             setIsOpen(false);
-                            //! buraya bak
-                            router.refresh();
+                            dispatch({
+                                type: 'REFRESH',
+                                payload: {
+                                    isOpen: !productBoxIsOpen
+                                }
+                            })
+                            toast.success('Add to cart successfully!');
                         })
                 }
-                else{
+                else {
                     alert('Login if you want to order!');
                 }
             })
@@ -54,6 +81,12 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
 
     return (
         <div className='fixed w-full h-screen top-0 left-0 flex justify-center items-center backdrop-blur-none backdrop-brightness-75 z-20 overflow-auto'>
+            {
+                actionIsVis &&
+                <div style={{ position: "fixed", zIndex: 100, top: offSetY, left: offSetX, background: "red" }}>
+                    pizzaImg
+                </div>
+            }
             <div className='relative bg-white p-3 rounded-md text-center w-96'>
                 <Image src={boxData.img} width={'320'} height={'320'} alt='itemImage' className='mx-auto max-h-60' />
                 <div className='text-gray-700 font-bold text-lg'>{boxData.name}</div>
@@ -114,7 +147,11 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
                 <button onClick={closeCartProduct} className='absolute right-1 top-1 w-12 backdrop-blur-sm'>x</button>
                 <button
                     className='bg-primary text-white'
-                    onClick={addToCart}
+                    onClick={(e) => {
+                        addToCart();
+                        setOffSetX(e.screenX);
+                        setOffSetY(e.screenY);
+                    }}
                 >
                     Add to chart ${Number(boxData.price) + Number(chooseSize ? chooseSize.price : 0) + totalExtrasPrice}
                 </button>

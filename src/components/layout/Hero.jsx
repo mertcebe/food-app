@@ -1,8 +1,12 @@
+"use client";
 import Image from 'next/image'
 import React from 'react'
 import Right from '../icons/Right'
 
 const Hero = () => {
+    const scrollFunc = (x, y) => {
+        scrollTo(x, y);
+    }
     return (
         <section className='hero md:mt-4 mb-6'>
             <div className='py-8 md:py-12'>
@@ -17,11 +21,15 @@ const Hero = () => {
                     complete, a simple yet delicious joy in life
                 </p>
                 <div className='flex text-sm gap-4'>
-                    <button className="flex justify-center bg-primary uppercase items-center gap-2 text-white px-4 py-2 font-semibold rounded-full">
+                    <button className="flex justify-center bg-primary uppercase items-center gap-2 text-white px-4 py-2 font-semibold rounded-full" onClick={() => {
+                        scrollFunc(0, 480);
+                    }}>
                         Order now
                         <Right className='w-5 h-5' />
                     </button>
-                    <button className="flex items-center gap-2 text-gray-600 py-2 font-semibold border-0">
+                    <button className="flex items-center gap-2 text-gray-600 py-2 font-semibold border-0" onClick={() => {
+                        scrollFunc(0, 1400);
+                    }}>
                         Learn More
                         <Right className='w-5 h-5' />
                     </button>

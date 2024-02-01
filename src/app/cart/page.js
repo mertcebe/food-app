@@ -7,10 +7,11 @@ import CartContainer from '@/components/menu/CartContainer';
 import CartProduct from '@/components/menu/CartProduct';
 import { auth, database } from '@/firebase/firebaseConfig';
 import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
-import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
 
-const CartPage = ({ searchParams }) => {
+const CartPage = () => {
     let [cartProducts, setCartProducts] = useState([]);
     let [subTotal, setSubTotal] = useState(null);
     let [loading, setLoading] = useState(false);
@@ -29,6 +30,11 @@ const CartPage = ({ searchParams }) => {
                 }
             })
     }, []);
+
+    const productBoxIsOpen = useSelector((state) => {
+        return state.menuItemReducers.productBoxIsOpen;
+    })
+    const dispatch = useDispatch();
 
     const getOffers = async () => {
         await getDocs(query(collection(database, `/users/${auth?.currentUser?.uid}/offers`), orderBy('orderDate', 'asc')))
@@ -86,6 +92,13 @@ const CartPage = ({ searchParams }) => {
             .then(async () => {
                 await getOffers();
                 setLoading(false);
+                dispatch({
+                    type: 'REFRESH',
+                    payload: {
+                        isOpen: !productBoxIsOpen
+                    }
+                })
+                toast.success('The product is deleted from cart successfully!');
             })
     }
 

@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux';
 
 const Header = () => {
     let [isAuthorized, setIsAuthorized] = useState(false);
@@ -14,6 +15,9 @@ const Header = () => {
     let [offersLength, setOffersLength] = useState(0);
     const router = useRouter();
     const loc = usePathname();
+    const productBoxIsOpen = useSelector((state) => {
+        return state.menuItemReducers.productBoxIsOpen;
+    })
     useEffect(() => {
         useAuthorized().then((snapshot) => {
             setIsAuthorized(snapshot);
@@ -22,16 +26,16 @@ const Header = () => {
                     .then((userInfo) => {
                         setUser(userInfo);
                         getOffersLength(userInfo.uid)
-                        .then((offersLength) => {
-                            setOffersLength(offersLength);
-                        })
+                            .then((offersLength) => {
+                                setOffersLength(offersLength);
+                            })
                     })
             }
-            else{
+            else {
                 setOffersLength(0)
             }
         })
-    }, [loc]);
+    }, [loc, productBoxIsOpen]);
 
     return (
         <>
@@ -40,10 +44,10 @@ const Header = () => {
                     <Link className='text-primary font-semibold text-2xl' href={'/'}>
                         ST PIZZA
                     </Link>
-                    <Link href={'/'}>Home</Link>
-                    <Link href={'/menu'}>Menu</Link>
-                    <Link href={'/about'}>About</Link>
-                    <Link href={'/contact'}>Contact</Link>
+                    <Link href={'/'} className={loc === '/' && 'active'}>Home</Link>
+                    <Link href={'/menu'} className={loc.includes('/menu') && 'active'}>Menu</Link>
+                    <Link href={'/about'} className={loc.includes('/about') && 'active'}>About</Link>
+                    <Link href={'/contact'} className={loc.includes('/contact') && 'active'}>Contact</Link>
                 </nav>
 
                 <div className='flex items-center gap-4'>
@@ -55,7 +59,7 @@ const Header = () => {
                             </nav>
                             :
                             <div className='flex gap-2 items-center'>
-                                <Link href={'/profile'} className='text-gray-500 font-semibold border-none px-4 py-2'>Hello, {user?.displayName ? user?.displayName.split(' ')[0] : 'User'}</Link>
+                                <Link href={'/profile'} className={`text-gray-500 font-semibold border-none px-4 py-2 ${loc.includes('/profile') ? 'active' : ''}`}>Hello, {user?.displayName ? user?.displayName.split(' ')[0] : 'User'}</Link>
                                 <button
                                     onClick={() => {
                                         signOut(auth);

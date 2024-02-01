@@ -3,6 +3,8 @@ import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
 
 const MenuItem = ({ setBoxControl, ...params }) => {
     const { _id, name, veg, price, description, img, sizes, extraIngredientPrices } = params;
@@ -17,7 +19,10 @@ const MenuItem = ({ setBoxControl, ...params }) => {
             addToChart(params);
         }
     }
-
+    const productBoxIsOpen = useSelector((state) => {
+        return state.menuItemReducers.productBoxIsOpen;
+    })
+    const dispatch = useDispatch();
     const addToChart = (data) => {
         addDoc(collection(database, `users/${auth.currentUser.uid}/offers`), {
             orderDate: new Date().getTime(),
@@ -25,7 +30,13 @@ const MenuItem = ({ setBoxControl, ...params }) => {
             price: price
         });
         //! buraya bak
-        router.refresh();
+        dispatch({
+            type: 'REFRESH',
+            payload: {
+                isOpen: !productBoxIsOpen
+            }
+        })
+        toast.success('Add to cart successfully!');
     }
 
     return (

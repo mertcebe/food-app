@@ -5,6 +5,7 @@ import MenuItem from '../menu/MenuItem';
 import data from '../../data/data.json';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { database } from '@/firebase/firebaseConfig';
+import CartProduct from '../menu/CartProduct';
 
 const getPizzas = async (num) => {
     return new Promise((resolve) => {
@@ -31,14 +32,27 @@ const getPizzas = async (num) => {
 
 const HomeMenu = () => {
     let [bestSeller, setBestSeller] = useState([]);
+    let [isOpen, setIsOpen] = useState(false);
+    let [data, setData] = useState(null);
+
     useEffect(() => {
         getPizzas()
             .then((snapshot) => {
                 setBestSeller(snapshot.slice(0, 3))
             })
     }, []);
+
+    const setBoxControl = (opt, data) => {
+        setIsOpen(opt);
+        setData(data);
+    }
+
     return (
         <>
+            {
+                isOpen &&
+                <CartProduct initialBoxData={data} setIsOpen={setIsOpen} />
+            }
             <div className="text-center mb-4">
                 <SectionHeaders
                     subHeader={'Check Out'}
@@ -50,7 +64,7 @@ const HomeMenu = () => {
                     bestSeller.length > 0 &&
                     bestSeller.map((item) => {
                         return (
-                            <MenuItem key={item.id} {...item} />
+                            <MenuItem key={item.id} {...item} setBoxControl={setBoxControl} />
                         )
                     })
                 }
