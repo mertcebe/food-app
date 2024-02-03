@@ -5,6 +5,7 @@ import CartProduct from '@/components/menu/CartProduct';
 import MenuItem from '@/components/menu/MenuItem';
 import { database } from '@/firebase/firebaseConfig';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
@@ -32,6 +33,8 @@ const MenuPage = () => {
     // details box
     const [boxData, setBoxData] = useState(null);
     const router = useRouter();
+    const [offSetX, setOffSetX] = useState(null);
+    const [offSetY, setOffSetY] = useState(null);
 
     useEffect(() => {
         fetchCategories()
@@ -64,11 +67,45 @@ const MenuPage = () => {
         setIsOpen(opt);
     }
 
+    const actionIsVis = useSelector((state) => {
+        return state.menuItemReducers.actionIsVis;
+    })
+    const dispatch = useDispatch();
+
+    const setMouseCoor = (e) => {
+        setOffSetX(e.screenX);
+        setOffSetY(e.screenY - 70);
+        addToCartAction();
+    }
+
+    const addToCartAction = () => {
+        dispatch({
+            type: 'ACTION_TOGGLE',
+            payload: {
+                isVis: true
+            }
+        })
+        setTimeout(() => {
+            dispatch({
+                type: 'ACTION_TOGGLE',
+                payload: {
+                    isVis: false
+                }
+            })
+        }, 500);
+    }
+
     return (
         <div className='my-4'>
             {
                 isOpen &&
-                <CartProduct initialBoxData={boxData} setIsOpen={setIsOpen} />
+                <CartProduct initialBoxData={boxData} setIsOpen={setIsOpen} setMouseCoor={setMouseCoor} />
+            }
+            {
+                actionIsVis &&
+                <div style={{ position: "fixed", zIndex: 100, top: offSetY, left: offSetX }} className='actionBox'>
+                    <Image src={'/pizzaIcon.png'} width={'100'} height={'100'} alt='iconImage' />
+                </div>
             }
             {
                 categories?.map((category) => {
@@ -80,7 +117,7 @@ const MenuPage = () => {
                                     category.menu.length !== 0 ?
                                         category.menu.map((item, index) => {
                                             return (
-                                                <MenuItem key={index} {...item} setBoxControl={setBoxControl} />
+                                                <MenuItem key={index} {...item} setBoxControl={setBoxControl} setMouseCoor={setMouseCoor} />
                                             )
                                         })
                                         :

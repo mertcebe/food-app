@@ -6,17 +6,20 @@ import React, { useState } from 'react'
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 
-const MenuItem = ({ setBoxControl, ...params }) => {
+const MenuItem = ({ setBoxControl, setMouseCoor, ...params }) => {
     const { _id, name, veg, price, description, img, sizes, extraIngredientPrices } = params;
 
     const router = useRouter();
 
-    const controlFunc = () => {
+    const controlFunc = (e) => {
         if ((sizes && extraIngredientPrices) && (sizes.length > 0 || extraIngredientPrices.length > 0)) {
             setBoxControl(true, params);
         }
         else {
             addToChart(params);
+            if (setMouseCoor) {
+                setMouseCoor(e);
+            }
         }
     }
     const productBoxIsOpen = useSelector((state) => {
@@ -29,7 +32,6 @@ const MenuItem = ({ setBoxControl, ...params }) => {
             productInfo: data,
             price: price
         });
-        //! buraya bak
         dispatch({
             type: 'REFRESH',
             payload: {
@@ -47,7 +49,9 @@ const MenuItem = ({ setBoxControl, ...params }) => {
                 <p className='text-black font-semibold pb-2'>{name}</p>
                 <p className='text-gray-600 text-sm font-thin'>{description}</p>
             </div>
-            <button className="bg-primary gap-2 w-52 text-white font-thin rounded-full" onClick={controlFunc}>
+            <button className="bg-primary gap-2 w-52 text-white font-thin rounded-full" onClick={(e) => {
+                controlFunc(e);
+            }}>
                 Add to chart <span className='font-semibold'>${price}</span>
             </button>
         </div>

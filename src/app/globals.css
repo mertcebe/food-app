@@ -67,3 +67,19 @@ div.tabs>*.active {
 a.active{
     color: black;
 }
+
+.actionBox {
+    transition: all 0.5s ease;
+    animation: orderActionFrames 0.5s forwards ease;
+}
+
+@keyframes orderActionFrames{
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.1;
+        top: 0px;
+        left: 1250px;
+    }
+}

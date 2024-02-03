@@ -7,13 +7,11 @@ import React, { useEffect, useState } from 'react'
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 
-const CartProduct = ({ initialBoxData, setIsOpen }) => {
+const CartProduct = ({ initialBoxData, setIsOpen, setMouseCoor }) => {
     const [boxData, setBoxData] = useState(initialBoxData);
     const [chooseSize, setChooseSize] = useState(null);
     const [chooseExtras, setChooseExtras] = useState([]);
     const [totalExtrasPrice, setTotalExtrasPrice] = useState(0);
-    const [offSetX, setOffSetX] = useState(null);
-    const [offSetY, setOffSetY] = useState(null);
 
     const router = useRouter();
 
@@ -36,19 +34,7 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
     const productBoxIsOpen = useSelector((state) => {
         return state.menuItemReducers.productBoxIsOpen;
     })
-    const actionIsVis = useSelector((state) => {
-        return state.menuItemReducers.actionIsVis;
-    })
     const dispatch = useDispatch();
-
-    const addToCartAction = () => {
-        dispatch({
-            type: 'ACTION_TOGGLE',
-            payload: {
-                isVis: true
-            }
-        })
-    }
 
     const addToCart = () => {
         useAuthorized()
@@ -62,7 +48,6 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
                         productInfo: boxData
                     })
                         .then(() => {
-                            addToCartAction();
                             setIsOpen(false);
                             dispatch({
                                 type: 'REFRESH',
@@ -81,12 +66,6 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
 
     return (
         <div className='fixed w-full h-screen top-0 left-0 flex justify-center items-center backdrop-blur-none backdrop-brightness-75 z-20 overflow-auto'>
-            {
-                actionIsVis &&
-                <div style={{ position: "fixed", zIndex: 100, top: offSetY, left: offSetX, background: "red" }}>
-                    pizzaImg
-                </div>
-            }
             <div className='relative bg-white p-3 rounded-md text-center w-96'>
                 <Image src={boxData.img} width={'320'} height={'320'} alt='itemImage' className='mx-auto max-h-60' />
                 <div className='text-gray-700 font-bold text-lg'>{boxData.name}</div>
@@ -149,8 +128,9 @@ const CartProduct = ({ initialBoxData, setIsOpen }) => {
                     className='bg-primary text-white'
                     onClick={(e) => {
                         addToCart();
-                        setOffSetX(e.screenX);
-                        setOffSetY(e.screenY);
+                        if(setMouseCoor){
+                            setMouseCoor(e);
+                        }
                     }}
                 >
                     Add to chart ${Number(boxData.price) + Number(chooseSize ? chooseSize.price : 0) + totalExtrasPrice}
